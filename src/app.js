@@ -2,19 +2,33 @@
 require("dotenv").config();
 // default requires
 const express = require("express");
+const path = require("path");
 
 // local requires
-const connectDB = require("./config/db");
+const connectDB = require("../src/config/db");
+const userRoutes = require("./routes/userRoutes");
+
+
 
 
 // server app created 
 const app = express();
 
+
+// Debug check (temporary) /////////////////////////////////////////////////////////
+
+
 // middleware to parse json
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // calling the db
 connectDB();
+
+
+// routes
+app.use("/api/users", userRoutes);
+
 
 // test route
 app.get("/",(req , res) => {

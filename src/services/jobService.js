@@ -32,6 +32,7 @@ const fetchArbeitnowJobs = async (keyword) => {
         }));
 };
 
+// filtering logic
 const calculateScore = (job, keyword) => {
     let score = 0;
 

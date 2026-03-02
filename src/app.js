@@ -3,10 +3,13 @@ require("dotenv").config();
 // default requires
 const express = require("express");
 const path = require("path");
+const axios = require("axios")
 
 // local requires
 const connectDB = require("../src/config/db");
 const userRoutes = require("./routes/userRoutes");
+const jobRoutes = require("./routes/jobRoutes");
+
 
 
 
@@ -30,6 +33,7 @@ connectDB();
 
 // routes
 app.use("/api/users", userRoutes);
+app.use("/api/jobs", jobRoutes);
 
 
 // test route

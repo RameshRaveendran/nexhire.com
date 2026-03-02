@@ -1,5 +1,6 @@
 const axios = require("axios");
 
+// remotive api integration
 const fetchRemotiveJobs = async (keyword) => {
     const response = await axios.get(
         `https://remotive.com/api/remote-jobs?search=${keyword}`
@@ -14,25 +15,7 @@ const fetchRemotiveJobs = async (keyword) => {
     }));
 };
 
-// const fetchArbeitnowJobs = async (keyword) => {
-//     const response = await axios.get(
-//         `https://arbeitnow.com/api/job-board-api`
-//     );
-
-//     // Manual filtering
-//     return response.data.data
-//         .filter(job => 
-//             job.title.toLowerCase().includes(keyword.toLowerCase())
-//         )
-//         .map(job => ({
-//             title: job.title,
-//             company: job.company_name,
-//             location: job.location,
-//             url: job.url,
-//             source: "Arbeitnow"
-//         }));
-// };
-
+// arbeitnow api integration
 const fetchArbeitnowJobs = async (keyword) => {
     const response = await axios.get(
         `https://arbeitnow.com/api/job-board-api`
@@ -49,6 +32,21 @@ const fetchArbeitnowJobs = async (keyword) => {
         }));
 };
 
+const calculateScore = (job, keyword) => {
+    let score = 0;
+
+    const lowerKeyword = keyword.toLowerCase();
+    const title = job.title.toLowerCase();
+    const company = job.company.toLowerCase();
+    const location = job.location.toLowerCase();
+
+    if (title.includes(lowerKeyword)) score += 5;
+    if (company.includes(lowerKeyword)) score += 2;
+    if (location.includes(lowerKeyword)) score += 1;
+
+    return score;
+};
+
 const fetchJobs = async (keyword) => {
     try {
         const [remotiveJobs, arbeitnowJobs] = await Promise.all([
@@ -56,11 +54,20 @@ const fetchJobs = async (keyword) => {
             fetchArbeitnowJobs(keyword)
         ]);
 
-        return [...remotiveJobs, ...arbeitnowJobs];
+        const allJobs = [...remotiveJobs, ...arbeitnowJobs];
+
+        const rankedJobs = allJobs
+            .map(job => ({
+                ...job,
+                score: calculateScore(job, keyword)
+            }))
+            .sort((a, b) => b.score - a.score);
+
+        return rankedJobs;
 
     } catch (error) {
-        console.error("Multi API Error:", error.message);
-        throw new Error("Failed to fetch aggregated jobs");
+        console.error("Ranking Engine Error:", error.message);
+        throw new Error("Failed to fetch ranked jobs");
     }
 };
 

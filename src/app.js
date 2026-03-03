@@ -9,6 +9,9 @@ const axios = require("axios")
 const connectDB = require("../src/config/db");
 const userRoutes = require("./routes/userRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const searchHistoryRoutes = require("./routes/searchHistoryRoutes");
+
+
 
 
 
@@ -34,6 +37,7 @@ connectDB();
 // routes
 app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/search-history", searchHistoryRoutes);
 
 
 // test route

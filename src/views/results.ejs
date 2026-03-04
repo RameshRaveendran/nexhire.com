@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Results</title>
+</head>
+<body>
+
+<h2>Job Results</h2>
+
+<% if (jobs.length === 0) { %>
+    <p>No jobs found</p>
+<% } %>
+
+<% jobs.forEach(job => { %>
+
+<div>
+
+<h3><%= job.title %></h3>
+
+<p><%= job.company %></p>
+
+<p><%= job.location %></p>
+
+<a href="<%= job.url %>" target="_blank">
+Apply
+</a>
+
+<hr>
+
+</div>
+
+<% }) %>
+
+</body>
+</html>

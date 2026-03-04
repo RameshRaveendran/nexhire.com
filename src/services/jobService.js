@@ -139,44 +139,69 @@ const sortJobs = (jobs, sort) => {
 /* =========================================================
    MAIN AGGREGATION ENGINE
 ========================================================= */
+const cache = {};
+
 const fetchJobs = async (filters) => {
-  const keyword = filters.keyword || "";
 
-  try {
-    const [remotiveJobs, arbeitnowJobs, museJobs] = await Promise.all([
-      fetchRemotiveJobs(keyword),
-      fetchArbeitnowJobs(keyword),
-      fetchMuseJobs(keyword),
-    ]);
+    const keyword = filters.keyword || "";
 
-    const allJobs = [...remotiveJobs, ...arbeitnowJobs, ...museJobs];
-    // console.log("Remotive jobs:", remotiveJobs.length);
-    // console.log("Arbeitnow jobs:", arbeitnowJobs.length);
-    // console.log("Muse jobs:", museJobs.length);
-    // console.log("Total aggregated jobs:", allJobs.length);
+    const cacheKey = keyword;
 
-    /* Ranking */
-    const rankedJobs = allJobs
-      .map((job) => ({
-        ...job,
-        score: calculateScore(job, keyword),
-      }))
-      .sort((a, b) => b.score - a.score);
+    if (cache[cacheKey]) {
+        console.log("Serving from cache");
+        return cache[cacheKey];
+    }
 
-    /* Deduplication */
-    const cleanJobs = deduplicateJobs(rankedJobs);
+    try {
 
-    /* Filtering */
-    const filteredJobs = filterJobs(cleanJobs, filters);
+        const results = await Promise.allSettled([
+            fetchRemotiveJobs(keyword),
+            fetchArbeitnowJobs(keyword),
+            fetchMuseJobs(keyword)
+        ]);
 
-    /* Sorting */
-    const finalJobs = sortJobs(filteredJobs, filters.sort);
+        const remotiveJobs = results[0].status === "fulfilled" ? results[0].value : [];
+        const arbeitnowJobs = results[1].status === "fulfilled" ? results[1].value : [];
+        const museJobs = results[2].status === "fulfilled" ? results[2].value : [];
 
-    return finalJobs;
-  } catch (error) {
-    console.error("Aggregation Engine Error:", error.message);
-    throw new Error("Failed to fetch jobs");
-  }
+        const allJobs = [
+            ...remotiveJobs,
+            ...arbeitnowJobs,
+            ...museJobs
+        ];
+
+        console.log("Remotive jobs:", remotiveJobs.length);
+        console.log("Arbeitnow jobs:", arbeitnowJobs.length);
+        console.log("Muse jobs:", museJobs.length);
+        console.log("Total aggregated jobs:", allJobs.length);
+
+        const rankedJobs = allJobs
+            .map(job => ({
+                ...job,
+                score: calculateScore(job, keyword)
+            }))
+            .sort((a, b) => b.score - a.score);
+
+        const cleanJobs = deduplicateJobs(rankedJobs);
+
+        const filteredJobs = filterJobs(cleanJobs, filters);
+
+        const finalJobs = sortJobs(filteredJobs, filters.sort);
+
+        cache[cacheKey] = finalJobs;
+
+        setTimeout(() => {
+            delete cache[cacheKey];
+        }, 60000);
+
+        return finalJobs;
+
+    } catch (error) {
+
+        console.error("Aggregation Engine Error:", error.message);
+        throw new Error("Failed to fetch jobs");
+
+    }
 };
 
 module.exports = { fetchJobs };

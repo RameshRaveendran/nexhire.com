@@ -1,29 +1,57 @@
-const fetchJobs = require("../services/jobService").fetchJobs;
+const { fetchJobs } = require("../services/jobService");
 const SearchHistory = require("../models/searchHistoryModel");
 
 const getJobs = async (req, res) => {
     try {
-        const keyword = req.query.keyword;
 
-        if (!keyword) {
+        /* =========================================
+           READ QUERY PARAMETERS
+        ========================================= */
+        const filters = {
+            keyword: req.query.keyword,
+            location: req.query.location,
+            company: req.query.company,
+            minScore: req.query.minScore,
+            sort: req.query.sort
+        };
+
+        if (!filters.keyword) {
             return res.status(400).json({ message: "Keyword is required" });
         }
 
-        // Save search history
+
+        /* =========================================
+           SAVE SEARCH HISTORY
+        ========================================= */
         await SearchHistory.create({
             user: req.user._id,
-            keyword
+            keyword: filters.keyword
         });
 
-        const jobs = await fetchJobs(keyword);
 
+        /* =========================================
+           CALL JOB AGGREGATION ENGINE
+        ========================================= */
+        const jobs = await fetchJobs(filters);
+
+
+        /* =========================================
+           RESPONSE
+        ========================================= */
         res.json({
+            success: true,
             count: jobs.length,
             jobs
         });
 
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch jobs" });
+
+        console.error("Job Controller Error:", error.message);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch jobs"
+        });
     }
 };
 

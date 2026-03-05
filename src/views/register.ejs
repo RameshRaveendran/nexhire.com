@@ -1,25 +1,356 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexHire | Create Your Future</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Electric Cyan */
+            --secondary: #0284c7;
+            --bg-deep: #020617; /* Deep Midnight */
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #0c4a6e, #020617);
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- 3D Background Job Tags --- */
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .job-float {
+            position: absolute;
+            color: rgba(14, 165, 233, 0.15);
+            font-weight: 800;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            user-select: none;
+            animation: fly 20s infinite linear;
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(50px) rotate(10deg); opacity: 0; }
+        }
+
+        /* --- Glass Card --- */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
+
+        h2 span { color: var(--primary); }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .row { display: flex; gap: 15px; }
+
+        input, select {
+            width: 100%;
+            padding: 13px 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+        /* Custom Select Styling */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgb(14,165,233)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 10px;
+        }
+
+        select option:hover {
+            background: #0ea5e9;
+            color: white;
+        }
+
+        /* Style for the Date input icon */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(14, 165, 233, 0.4);
+        }
+
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover { text-decoration: underline; }
+
+        @media (max-width: 480px) {
+            .row { flex-direction: column; gap: 0; }
+        }
+    </style>
 </head>
 <body>
+    <div class="bg-layer" id="bg"></div>
 
-<h2>Register</h2>
+    <div class="glass-card">
+        <h2>Nex<span>Hire</span></h2>
+        <p class="subtitle">Join the elite talent network</p>
+        
+        <form id="registerForm">
+            <div class="row">
+                <input type="text" name="firstName" placeholder="First Name">
+                <input type="text" name="lastName" placeholder="Last Name">
+            </div>
+            
+            <div class="row">
+                <input type="text" name="dob" id="dobPicker" placeholder="Select Date of Birth">
+                <select name="gender">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
 
-<form action="/register" method="POST">
+            <input type="tel" name="mobileNumber" placeholder="Mobile Number">
+            <input type="email" name="email" placeholder="Email Address">
+            <input type="password" name="password" placeholder="Password">
 
-<input type="text" name="name" placeholder="Name" required>
+            <button type="submit" id="registerBtn">Get Started</button>
+        </form>
 
-<input type="email" name="email" placeholder="Email" required>
+        <div class="footer">
+            Already have an account? <a href="/login">Log In</a>
+        </div>
+    </div>
 
-<input type="password" name="password" placeholder="Password" required>
+    <script>
+        // --- Initialize Flatpickr Date Picker ---
+        flatpickr("#dobPicker", {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            yearRange: [1950, new Date().getFullYear()],
+            monthSelectorType: "static",
+            disableMobile: false,
+            theme: "dark"
+        });
+        // --- Floating Background Elements ---
+        const jobs = ['React Developer', 'Node.js', 'UI Designer', 'DevOps', 'Data Analyst', 'Project Manager', 'AI Engineer', 'System Architect'];
+        const container = document.getElementById('bg');
+        for (let i = 0; i < 15; i++) {
+            const div = document.createElement('div');
+            div.className = 'job-float';
+            div.innerText = jobs[Math.floor(Math.random() * jobs.length)];
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            div.style.animationDelay = Math.random() * 10 + 's';
+            div.style.fontSize = (Math.random() * 0.5 + 0.9) + 'rem';
+            container.appendChild(div);
+        }
 
-<button type="submit">Register</button>
+        // --- SweetAlert2 Registration Handler ---
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                firstName: document.querySelector('input[name="firstName"]').value.trim(),
+                lastName: document.querySelector('input[name="lastName"]').value.trim(),
+                dob: document.querySelector('input[name="dob"]').value,
+                gender: document.querySelector('select[name="gender"]').value,
+                mobileNumber: document.querySelector('input[name="mobileNumber"]').value.trim(),
+                email: document.querySelector('input[name="email"]').value.trim(),
+                password: document.querySelector('input[name="password"]').value
+            };
 
-</form>
+            const registerBtn = document.getElementById('registerBtn');
 
-<a href="/login">Login</a>
+            // --- Check for Empty Fields FIRST ---
+            if (!formData.firstName) {
+                Swal.fire({ icon: 'warning', title: 'First Name Required', text: 'Please enter your first name', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
 
+            if (!formData.lastName) {
+                Swal.fire({ icon: 'warning', title: 'Last Name Required', text: 'Please enter your last name', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!formData.dob) {
+                Swal.fire({ icon: 'warning', title: 'DOB Required', text: 'Please select your date of birth', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!formData.gender) {
+                Swal.fire({ icon: 'warning', title: 'Gender Required', text: 'Please select your gender', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!formData.mobileNumber) {
+                Swal.fire({ icon: 'warning', title: 'Mobile Required', text: 'Please enter your mobile number', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!formData.email) {
+                Swal.fire({ icon: 'warning', title: 'Email Required', text: 'Please enter your email address', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!formData.password) {
+                Swal.fire({ icon: 'warning', title: 'Password Required', text: 'Please enter a password', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            // --- Validate Field Formats ---
+            if (formData.firstName.length < 2 || formData.lastName.length < 2) {
+                Swal.fire({ icon: 'error', title: 'Invalid Name', text: 'Names must be at least 2 characters', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Please enter a valid email address', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (!/^\d{10}$/.test(formData.mobileNumber.replace(/\D/g, ''))) {
+                Swal.fire({ icon: 'error', title: 'Invalid Mobile', text: 'Mobile number must be 10 digits', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            if (formData.password.length < 6) {
+                Swal.fire({ icon: 'error', title: 'Weak Password', text: 'Password must be at least 6 characters', confirmButtonColor: '#0ea5e9' });
+                return;
+            }
+
+            // --- Server Request ---
+            registerBtn.disabled = true;
+            registerBtn.innerText = 'Connecting...';
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData)
+                });
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Welcome to NexHire. Redirecting...',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => { window.location.href = '/login'; });
+                } else {
+                    const errorText = await response.text();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Registration Failed',
+                        text: errorText.includes('Email') ? 'Email already registered' : 'Something went wrong',
+                        confirmButtonColor: '#0ea5e9'
+                    });
+                    registerBtn.disabled = false;
+                    registerBtn.innerText = 'Get Started';
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Network Error', text: 'Please check your internet connection', confirmButtonColor: '#0ea5e9' });
+                registerBtn.disabled = false;
+                registerBtn.innerText = 'Get Started';
+            }
+        });
+    </script>
 </body>
 </html>

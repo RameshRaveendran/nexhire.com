@@ -105,9 +105,13 @@ const filterJobs = (jobs, filters) => {
   let filtered = jobs;
 
   if (location) {
-    filtered = filtered.filter((job) =>
+    // First try strict location filter
+    let locationFiltered = filtered.filter((job) =>
       job.location.toLowerCase().includes(location.toLowerCase()),
     );
+    
+    // If no results with location filter, return all jobs (don't filter by location)
+    filtered = locationFiltered.length > 0 ? locationFiltered : filtered;
   }
 
   if (company) {

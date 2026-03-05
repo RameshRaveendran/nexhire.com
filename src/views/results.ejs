@@ -1,35 +1,586 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Job Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search Results | NexHire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0ea5e9;
+            --secondary: #0284c7;
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #0c4a6e, #020617);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- Navbar --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            padding: 40px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            margin-bottom: 40px;
+        }
+
+        .results-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .results-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* --- Search Filter --- */
+        .filter-section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        .filter-group input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+        }
+
+        .filter-group input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-again-btn {
+            padding: 12px 30px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .search-again-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
+        }
+
+        /* --- Jobs Grid --- */
+        .jobs-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .job-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .job-card:hover {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.95);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(14, 165, 233, 0.2);
+        }
+
+        .job-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
+        .job-company {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .job-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 10px 0;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .job-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .job-meta span::before {
+            content: '•';
+            color: var(--primary);
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .apply-btn {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .apply-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .save-btn {
+            padding: 12px 16px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .save-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --- Empty State --- */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .empty-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            padding: 12px 25px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --- Results Info --- */
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .results-count {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .results-count strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .nav-right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .search-again-btn {
+                width: 100%;
+            }
+
+            .jobs-container {
+                grid-template-columns: 1fr;
+            }
+
+            .results-title {
+                font-size: 24px;
+            }
+
+            .results-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">NexHire</div>
+        <div class="nav-right">
+            <% if (user) { %>
+                <div class="user-info">
+                    <div class="user-name"><%= user.firstName %> <%= user.lastName %></div>
+                    <div class="user-email"><%= user.email %></div>
+                </div>
+            <% } %>
+            <div class="nav-buttons">
+                <% if (user) { %>
+                    <button class="nav-btn back-btn" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+                <% } else { %>
+                    <button class="nav-btn back-btn" onclick="window.location.href='/'">← Back Home</button>
+                <% } %>
+                <% if (user) { %>
+                    <button class="nav-btn logout-btn" onclick="logoutUser()">Logout</button>
+                <% } %>
+            </div>
+        </div>
+    </nav>
 
-<h2>Job Results</h2>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header-section">
+            <div class="results-title">🔍 Job Search Results</div>
+            <div class="results-subtitle">
+                <% if (filters.keyword) { %>
+                    Showing results for "<strong><%= filters.keyword %></strong>"
+                    <% if (filters.location) { %> in <strong><%= filters.location %></strong> <% } %>
+                <% } %>
+            </div>
+        </div>
 
-<% if (jobs.length === 0) { %>
-    <p>No jobs found</p>
-<% } %>
+        <!-- Search Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group" style="flex: 1;">
+                <label>Job Title or Keyword</label>
+                <input type="text" id="newKeyword" placeholder="e.g., Developer, Designer" value="<%= filters.keyword || '' %>">
+            </div>
+            <div class="filter-group" style="flex: 1;">
+                <label>Location</label>
+                <input type="text" id="newLocation" placeholder="e.g., New York, Remote" value="<%= filters.location || '' %>">
+            </div>
+            <button class="search-again-btn" onclick="searchAgain()">Search Again</button>
+        </div>
 
-<% jobs.forEach(job => { %>
+        <!-- Results Info and Jobs -->
+        <% if (jobs && jobs.length > 0) { %>
+            <div class="results-info">
+                <div class="results-count">Found <strong><%= jobs.length %></strong> job<%= jobs.length !== 1 ? 's' : '' %></div>
+            </div>
 
-<div>
+            <!-- Jobs Grid -->
+            <div class="jobs-container">
+                <% jobs.forEach(job => { %>
+                    <div class="job-card">
+                        <div>
+                            <div class="job-title"><%= job.title || 'Job Title' %></div>
+                            <div class="job-company"><%= job.company || 'Company' %></div>
+                        </div>
 
-<h3><%= job.title %></h3>
+                        <div class="job-meta">
+                            <% if (job.location) { %>
+                                <span>📍 <%= job.location %></span>
+                            <% } %>
+                            <% if (job.source) { %>
+                                <span>🌐 <%= job.source %></span>
+                            <% } %>
+                        </div>
 
-<p><%= job.company %></p>
+                        <div class="job-actions">
+                            <% if (job.url) { %>
+                                <a href="<%= job.url %>" target="_blank" class="apply-btn">Apply Now</a>
+                            <% } else { %>
+                                <button class="apply-btn" disabled style="opacity: 0.5; cursor: not-allowed;">No Link</button>
+                            <% } %>
+                            <button class="save-btn" onclick="saveJob(this, '<%= job.title %>')">💾</button>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">🎯</div>
+                <div class="empty-title">No Jobs Found</div>
+                <div class="empty-text">
+                    We couldn't find any jobs matching your search criteria. Try adjusting your search terms or exploring different keywords.
+                </div>
+                <div class="empty-actions">
+                    <% if (user) { %>
+                        <button class="btn-secondary" onclick="window.location.href='/dashboard'">← Back to Dashboard</button>
+                    <% } else { %>
+                        <button class="btn-secondary" onclick="window.location.href='/'">Go to Home</button>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </div>
 
-<p><%= job.location %></p>
+    <script>
+        function searchAgain() {
+            const keyword = document.getElementById('newKeyword').value.trim();
+            const location = document.getElementById('newLocation').value.trim();
 
-<a href="<%= job.url %>" target="_blank">
-Apply
-</a>
+            if (!keyword) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Required Field',
+                    text: 'Please enter a job title or keyword to search',
+                    confirmButtonColor: '#0ea5e9'
+                });
+                return;
+            }
 
-<hr>
+            const url = `/search?keyword=${encodeURIComponent(keyword)}&location=${encodeURIComponent(location)}`;
+            window.location.href = url;
+        }
 
-</div>
+        function saveJob(btn, jobTitle) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Job Saved!',
+                text: `"${jobTitle}" has been saved for later`,
+                confirmButtonColor: '#0ea5e9',
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }
 
-<% }) %>
+        <% if (user) { %>
+        function logoutUser() {
+            Swal.fire({
+                icon: 'question',
+                title: 'Confirm Logout',
+                text: 'Are you sure you want to logout?',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, Logout'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/logout';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+        <% } %>
 
+        // Allow Enter key to search
+        document.getElementById('newKeyword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchAgain();
+        });
+        document.getElementById('newLocation').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchAgain();
+        });
+    </script>
 </body>
 </html>

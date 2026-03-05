@@ -1,23 +1,268 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexHire | Welcome Back</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Electric Cyan */
+            --secondary: #0284c7;
+            --bg-deep: #020617; /* Deep Midnight */
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at bottom left, #0c4a6e, #020617);
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- 3D Background Job Tags --- */
+        .bg-layer {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .job-float {
+            position: absolute;
+            color: rgba(14, 165, 233, 0.12);
+            font-weight: 800;
+            white-space: nowrap;
+            user-select: none;
+            animation: fly 22s infinite linear;
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(-10deg); opacity: 0; }
+        }
+
+        /* --- Glass Login Card --- */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            z-index: 10;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            margin: 0 0 5px;
+            letter-spacing: -1px;
+            font-weight: 600;
+        }
+
+        h2 span { color: var(--primary); }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            margin-bottom: 35px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+        }
+
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+        }
+
+        button:hover {
+            background: var(--secondary);
+            transform: scale(1.02);
+            box-shadow: 0 15px 25px rgba(14, 165, 233, 0.4);
+        }
+
+        button:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer-links {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .link:hover { color: var(--primary); }
+
+        .signup-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
+    <div class="bg-layer" id="bg"></div>
 
-<h2>Login</h2>
+    <div class="glass-card">
+        <h2>Nex<span>Hire</span></h2>
+        <p class="subtitle">Welcome back, professional.</p>
+        
+        <form id="loginForm">
+            <input type="email" name="email" placeholder="Email Address">
+            <input type="password" name="password" placeholder="Password">
 
-<form action="/login" method="POST">
+            <button type="submit" id="loginBtn">Sign In</button>
+        </form>
 
-<input type="email" name="email" placeholder="Email" required>
+        <div class="footer-links">
+            <a href="#" class="link">Forgot Password?</a>
+            <a href="/register" class="link">Don't have an account? <span class="signup-text">Create Account</span></a>
+        </div>
+    </div>
 
-<input type="password" name="password" placeholder="Password" required>
+    <script>
+        // --- Floating Background Elements ---
+        const jobs = ['Product Lead', 'Python Expert', 'HR Director', 'SEO Expert', 'Security Lead', 'Full Stack', 'Cloud Architect'];
+        const container = document.getElementById('bg');
+        for (let i = 0; i < 12; i++) {
+            const div = document.createElement('div');
+            div.className = 'job-float';
+            div.innerText = jobs[Math.floor(Math.random() * jobs.length)];
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.animationDuration = (Math.random() * 15 + 15) + 's';
+            div.style.animationDelay = Math.random() * 10 + 's';
+            div.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
+            container.appendChild(div);
+        }
 
-<button type="submit">Login</button>
+        // --- SweetAlert2 Login Handler ---
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const password = document.querySelector('input[name="password"]').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
 
-</form>
+            // --- Check for Empty Fields First ---
+            if (!email) {
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Email Required', 
+                    text: 'Please enter your email address', 
+                    confirmButtonColor: '#0ea5e9' 
+                });
+                return;
+            }
 
-<a href="/register">Register</a>
+            if (!password) {
+                Swal.fire({ 
+                    icon: 'warning', 
+                    title: 'Password Required', 
+                    text: 'Please enter your password', 
+                    confirmButtonColor: '#0ea5e9' 
+                });
+                return;
+            }
 
+            // --- Validate Email Format ---
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Invalid Email', 
+                    text: 'Please enter a valid email address', 
+                    confirmButtonColor: '#0ea5e9' 
+                });
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = 'Verifying...';
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ email, password })
+                });
+
+                // Handling redirects or successful login
+                if (response.ok || response.redirected) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: 'Welcome back to NexHire',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => { window.location.href = '/dashboard'; });
+                } else {
+                    const errorMsg = await response.text();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Failed',
+                        text: errorMsg || 'Invalid email or password',
+                        confirmButtonColor: '#0ea5e9'
+                    });
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = 'Sign In';
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Network Error', text: 'Please check your connection', confirmButtonColor: '#0ea5e9' });
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'Sign In';
+            }
+        });
+    </script>
 </body>
 </html>

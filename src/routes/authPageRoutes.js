@@ -6,7 +6,8 @@ const {
     loginPage,
     registerPage,
     loginUser,
-    registerUser
+    registerUser,
+    logoutUser
 } = require("../controllers/authPageController");
 
 router.get("/login", loginPage);
@@ -16,5 +17,7 @@ router.get("/register", registerPage);
 router.post("/login", loginUser);
 
 router.post("/register", registerUser);
+
+router.post("/logout", logoutUser);
 
 module.exports = router;

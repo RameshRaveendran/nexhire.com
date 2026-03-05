@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexHire | Your Future Job Awaits</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #0ea5e9; /* Electric Cyan */
+            --secondary: #0284c7;
+            --bg-deep: #020617; /* Deep Midnight */
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #0c4a6e 0%, #020617 100%);
+            color: #f8fafc;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- 3D Background Job Tags --- */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .job-float {
+            position: absolute;
+            color: rgba(14, 165, 233, 0.1);
+            font-weight: 800;
+            white-space: nowrap;
+            user-select: none;
+            animation: fly 25s infinite linear;
+        }
+
+        @keyframes fly {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(15deg); opacity: 0; }
+        }
+
+        /* --- Navbar --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            backdrop-filter: blur(15px);
+            background: rgba(2, 6, 23, 0.5);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo span { color: var(--primary); }
+
+        .nav-btns { display: flex; gap: 15px; }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border);
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--primary); }
+
+        .btn-fill {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-fill:hover { background: var(--secondary); transform: translateY(-2px); }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            max-width: 700px;
+            margin-bottom: 40px;
+        }
+
+        /* --- Features/Quotes Grid --- */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 0 8% 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .card p { color: #94a3b8; font-size: 1rem; }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid var(--border);
+            background: rgba(2, 6, 23, 0.8);
+        }
+
+        footer p { color: #475569; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-btns { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer" id="bg"></div>
+
+    <nav>
+        <a href="#" class="logo">Nex<span>Hire</span></a>
+        <div class="nav-btns">
+            <a href="/login" class="btn btn-outline">Log In</a>
+            <a href="/register" class="btn btn-fill">Join Now</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <h1>Your Future Job Awaits</h1>
+        <p>NexHire connects the world's most ambitious professionals with the industry's leading companies. Your next chapter begins here.</p>
+        <div class="nav-btns" style="display: flex;">
+            <a href="/register" class="btn btn-fill" style="padding: 15px 40px; font-size: 1.1rem;">Start Your Journey</a>
+        </div>
+    </section>
+
+    <h2 class="section-title">Why Nex<span>Hire</span>?</h2>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>Elite Opportunities</h3>
+            <p>Access exclusive job postings from top-tier tech firms and innovative startups worldwide.</p>
+        </div>
+        <div class="card">
+            <h3>Smart Matching</h3>
+            <p>Our AI-driven algorithms pair your unique skills with roles where you'll actually thrive.</p>
+        </div>
+        <div class="card">
+            <h3>Career Growth</h3>
+            <p>Success is not about finding the perfect job, it's about growing in the right one with the right mentors.</p>
+        </div>
+        <div class="card">
+            <h3>Global Network</h3>
+            <p>Join a community of thousands who have successfully transitioned into their dream careers.</p>
+        </div>
+        <div class="card">
+            <h3>Personalized Experience</h3>
+            <p>We believe talent deserves to be discovered. That's why we make job hunting personal and effective.</p>
+        </div>
+        <div class="card">
+            <h3>Instant Connect</h3>
+            <p>Every great career starts with a single click. Your next opportunity is just a search away.</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 NexHire. Built for the future of work.</p>
+    </footer>
+
+    <script>
+        // --- Shared Floating Background Logic ---
+        const jobs = ['React Developer', 'Full Stack', 'Cloud Architect', 'Data Scientist', 'UI Designer', 'DevOps Specialist', 'AI Engineer', 'Product Manager'];
+        const container = document.getElementById('bg');
+        for (let i = 0; i < 18; i++) {
+            const div = document.createElement('div');
+            div.className = 'job-float';
+            div.innerText = jobs[Math.floor(Math.random() * jobs.length)];
+            div.style.left = Math.random() * 100 + 'vw';
+            div.style.animationDuration = (Math.random() * 15 + 15) + 's';
+            div.style.animationDelay = Math.random() * 10 + 's';
+            div.style.fontSize = (Math.random() * 0.8 + 1) + 'rem';
+            container.appendChild(div);
+        }
+
+        // --- SweetAlert2 Greeting ---
+        window.addEventListener('load', () => {
+            if (!localStorage.getItem('nexhire_welcome')) {
+                localStorage.setItem('nexhire_welcome', 'true');
+                setTimeout(() => {
+                    Swal.fire({
+                        title: 'Welcome to NexHire',
+                        text: 'Are you ready to discover your dream job?',
+                        icon: 'success',
+                        confirmButtonText: 'Let\'s Go!',
+                        confirmButtonColor: '#0ea5e9',
+                        background: '#0f172a',
+                        color: '#fff'
+                    });
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -73,7 +73,15 @@ const registerUser = async (req, res) => {
 };
 
 const logoutUser = (req, res) => {
-  res.clearCookie("token");
+  // Clear the token cookie
+  res.clearCookie("token", { httpOnly: true });
+  
+  // Set cache-prevention headers to prevent browser back-button access
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  
+  // Redirect to landing page
   res.redirect("/");
 };
 

@@ -523,6 +523,12 @@
     </div>
 
     <script>
+        // Prevent back-button access to cached pages by pushing dummy history states
+        history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function() {
+            history.pushState(null, null, window.location.href);
+        });
+
         function searchAgain() {
             const keyword = document.getElementById('newKeyword').value.trim();
             const location = document.getElementById('newLocation').value.trim();

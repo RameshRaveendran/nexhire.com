@@ -105,16 +105,14 @@ const filterJobs = (jobs, filters) => {
   let filtered = jobs;
 
   if (location) {
-    // First try strict location filter
-    let locationFiltered = filtered.filter((job) =>
+    // Apply strict location filter - don't fallback if no results
+    filtered = filtered.filter((job) =>
       job.location.toLowerCase().includes(location.toLowerCase()),
     );
-    
-    // If no results with location filter, return all jobs (don't filter by location)
-    filtered = locationFiltered.length > 0 ? locationFiltered : filtered;
   }
 
   if (company) {
+    // Apply strict company filter
     filtered = filtered.filter((job) =>
       job.company.toLowerCase().includes(company.toLowerCase()),
     );
@@ -149,10 +147,17 @@ const fetchJobs = async (filters) => {
 
     const keyword = filters.keyword || "";
 
-    const cacheKey = keyword;
+    // Create cache key that includes all filter parameters
+    const cacheKey = JSON.stringify({
+        keyword: filters.keyword,
+        location: filters.location,
+        company: filters.company,
+        minScore: filters.minScore,
+        sort: filters.sort
+    });
 
     if (cache[cacheKey]) {
-        console.log("Serving from cache");
+        console.log("Serving from cache for:", filters.keyword, filters.location);
         return cache[cacheKey];
     }
 

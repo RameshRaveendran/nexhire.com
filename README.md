@@ -1,7 +1,7 @@
 # NexHire – Job Search Aggregator Platform 🚀
 
 A full-stack job search platform that aggregates job listings from multiple APIs, allowing users to search, filter, and track job opportunities with a modern, secure interface.
-
+live website: https://nexhire-com-2.onrender.com
 ---
 
 ## ✨ Features Implemented
